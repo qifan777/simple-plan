@@ -1,0 +1,191 @@
+<template>
+  <view class="task">
+    <uni-forms ref="form" :modelValue="task" :rules="rules">
+      <uni-forms-item required label="标题" name="title">
+        <uni-easyinput
+          type="text"
+          v-model="task.title"
+          placeholder="请输入任务名"
+        />
+      </uni-forms-item>
+      <uni-forms-item label="步骤">
+        <div class="row">
+          <div class="step-wrapper">
+            <div class="step" v-for="(step, index) in steps">
+              <uni-easyinput
+                type="text"
+                v-model="step.content"
+                placeholder="步骤描述"
+              />
+              <image
+                class="close"
+                src="@/static/icons/close.png"
+                mode="widthFix"
+                @click="removeStep(index)"
+              ></image>
+            </div>
+            <div class="next" @click="addStep">
+              <div class="label">+</div>
+              <div>下一步</div>
+            </div>
+          </div>
+        </div>
+      </uni-forms-item>
+      <uni-forms-item name="checked" label="描述">
+        <div class="row">
+          <textarea
+            class="desc"
+            v-model="task.description"
+            placeholder="描述一下任务吧~"
+          ></textarea>
+        </div>
+      </uni-forms-item>
+      <uni-forms-item label="截至日期" name="deadline">
+        <div class="row">
+          <uni-datetime-picker
+            :border="false"
+            type="datetime"
+            @change="bindDateChange"
+          />
+        </div>
+      </uni-forms-item>
+      <uni-forms-item label="附件">
+        <uploader ref="uploader"></uploader>
+      </uni-forms-item>
+    </uni-forms>
+    <button plain="true" class="submit" @click="submit">提交</button>
+  </view>
+</template>
+<script lang="ts">
+import Vue from "vue";
+import { myFile, Step, Task } from "@/typings";
+import { createTask } from "@/api/tasks";
+import uploader from "@/components/uploader.vue";
+export default Vue.extend({
+  components: {
+    uploader,
+  },
+  data() {
+    return {
+      listId: -1,
+      date: "选择截至日期",
+      task: {} as Task,
+      steps: [] as Step[],
+      rules: {
+        title: {
+          rules: [{ required: true, errorMessage: "请填写任务标题" }],
+        },
+      },
+    };
+  },
+  methods: {
+    bindDateChange(value: any) {
+      console.log(value);
+      this.date = value;
+      let date2 = this.date;
+      this.task.deadline = date2;
+    },
+    async submit() {
+      let form = this.$refs.form as any;
+      let up = this.$refs.uploader as any;
+      let res = (await form.validate()) as any[];
+      let uploadFiles = up.getUploadFiles();
+      if (uploadFiles.length != up.files.length) {
+        uni.showToast({
+          title: "有未上传文件",
+          icon: "none",
+        });
+        return;
+      }
+      if (uploadFiles && uploadFiles.length > 0) {
+        this.task.appendix = JSON.stringify(uploadFiles);
+      }
+      this.task.listId = this.listId;
+      this.task.steps = this.steps.filter((x) => x.content);
+      createTask(this.task).then((res) => {
+        if (res.data == true) {
+          uni.showToast({ title: "添加成功" });
+          uni.navigateBack({});
+        }
+      });
+    },
+    addStep() {
+      this.steps.push({ content: "", checked: false } as Step);
+    },
+    removeStep(index: number) {
+      this.steps.splice(index, 1);
+    },
+  },
+  onLoad(options: any) {
+    this.listId = options.listId;
+  },
+});
+</script>
+<style lang="scss" scoped>
+page {
+  background-color: $uni-bg-color-grey;
+}
+.task {
+  border-radius: 15rpx;
+  margin: 0 20rpx;
+  padding: 20rpx;
+  background-color: white;
+  overflow: hidden;
+  .row {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    font-size: 30rpx;
+    .desc {
+      width: 500rpx;
+    }
+    .date {
+      width: 400rpx;
+      color: $uni-text-color-placeholder;
+    }
+    .time {
+      width: 400rpx;
+      color: $uni-text-color-placeholder;
+    }
+    .step-wrapper {
+      .step {
+        display: flex;
+        align-items: center;
+        .close {
+          margin-left: 20rpx;
+          width: 40rpx;
+        }
+      }
+      .next {
+        display: flex;
+        align-items: center;
+        color: lightblue;
+        .label {
+          font-size: 50rpx;
+          margin-right: 20rpx;
+        }
+      }
+    }
+  }
+  .submit {
+    width: 300rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    border-radius: 40rpx;
+    margin-top: 50rpx;
+    margin-bottom: 30rpx;
+    border: 0;
+    color: white;
+    box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
+    background: linear-gradient(to right, #f0ad4e 0%, #fddcad 100%);
+  }
+}
+
+   ::v-deep .uni-forms-item__inner {
+    padding: 10rpx;
+    border-bottom: 1rpx solid rgba(143, 142, 142, 0.089);
+  }
+</style>
