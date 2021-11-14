@@ -6,19 +6,11 @@
     <view class="right">
       <slot name="right">初七</slot>
       <uni-icons
-        class="mr-30"
-        type="icon-kongxincai"
-        font-family="iconfont"
-        color="#007AFF"
-        size="20"
-      ></uni-icons>
-
-      <!-- <uni-icons
         class="arrow-right"
+        type="arrowright"
         color="#d1d1d1"
         size="28"
-        name="arrowright"
-      ></uni-icons> -->
+      ></uni-icons>
     </view>
   </view>
 </template>

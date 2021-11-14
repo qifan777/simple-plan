@@ -13,25 +13,34 @@
               <text class="name" v-if="userInfo.nickName">{{
                 "Hello," + userInfo.nickName
               }}</text>
-              <text class="name2" v-else>您还未登录,点击登录</text>
+              <text
+                class="name2"
+                v-else
+                @click.stop="switchPage('/pages/login/login')"
+                >您还未登录,点击登录</text
+              >
               <text class="tip">我的信息</text>
             </view>
             <image
-              mode="widthFix"
+              mode="aspectFill"
               :src="userInfo.avatar"
               v-if="userInfo.avatar"
             ></image>
-            <image mode="widthFix" src="@/static/icons/user.png" v-else></image>
+            <image
+              mode="aspectFill"
+              src="@/static/icons/user.png"
+              v-else
+            ></image>
           </view>
         </view>
       </view>
     </view>
     <view class="divider">
-      <view class="front">我的看板</view>
+      <view class="front">我的清单</view>
     </view>
     <div class="list-section" v-if="show">
       <div class="left-lists lists">
-        <div v-for="(list, index) in lists">
+        <div v-for="(list, index) in lists" :key="index">
           <div class="list" v-if="index % 2 == 0">
             <div class="top">
               <div class="title">
@@ -43,8 +52,14 @@
                   mode="widthFix"
                   src="../../static/icons/more.png"
                   @click="showMenu(index)"
-                ></image>
-                <div class="tips" v-show="activeMenu == index">
+                  v-if="list.listId > 0"
+                >
+                </image>
+                <div
+                  class="tips"
+                  v-show="activeMenu == index"
+                  v-if="list.listId > 0"
+                >
                   <ul>
                     <li
                       @click="
@@ -59,34 +74,35 @@
                 </div>
               </div>
             </div>
-            <div class="task-wrapper" v-for="(task, index2) in list.tasks">
-              <div class="task" v-if="task.title">
-                <checkbox-group @change="checkTask(task)">
-                  <checkbox
-                    value="0"
-                    :checked="task.checked"
-                    color="#FFCC33"
-                    style="transform: scale(0.7)"
-                  />
-                </checkbox-group>
-                <div :class="['title', { checkedTask: task.checked }]">
-                  {{ task.title }}
+            <uni-swipe-action>
+              <uni-swipe-action-item
+                v-for="(task, index2) in list.tasks"
+                :key="index2"
+                :right-options="options"
+                @click="bindClick($event, task.taskId, list.listId)"
+                @change="swipeChange($event, index)"
+                class="task-wrapper"
+              >
+                <div class="task" v-if="task.title">
+                  <checkbox-group @change="checkTask(task)">
+                    <checkbox
+                      value="0"
+                      :checked="task.checked"
+                      color="#FFCC33"
+                      style="transform: scale(0.7)"
+                    />
+                  </checkbox-group>
+                  <div :class="['title', { checkedTask: task.checked }]">
+                    {{ task.title }}
+                  </div>
                 </div>
-                <div class="detail">
-                  <image
-                    @click="switchPage('/pages/task/task?id=' + task.taskId)"
-                    class="icon"
-                    mode="widthFix"
-                    src="../../static/icons/arrow-right.png"
-                  ></image>
-                </div>
-              </div>
-            </div>
+              </uni-swipe-action-item>
+            </uni-swipe-action>
           </div>
         </div>
       </div>
       <div class="right-lists lists">
-        <div v-for="(list, index) in lists">
+        <div v-for="(list, index) in lists" :key="index">
           <div class="list" v-if="index % 2 != 0">
             <div class="top">
               <div class="title">
@@ -98,7 +114,9 @@
                   mode="widthFix"
                   src="../../static/icons/more.png"
                   @click="showMenu(index)"
-                ></image>
+                  v-if="list.listId > 0"
+                >
+                </image>
                 <div class="tips" v-show="activeMenu == index">
                   <ul>
                     <li
@@ -114,29 +132,30 @@
                 </div>
               </div>
             </div>
-            <div class="task-wrapper" v-for="(task, index2) in list.tasks">
-              <div class="task" v-if="task.title">
-                <checkbox-group @change="checkTask(task)">
-                  <checkbox
-                    value="0"
-                    :checked="task.checked"
-                    color="#FFCC33"
-                    style="transform: scale(0.7)"
-                  />
-                </checkbox-group>
-                <div :class="['title', { checkedTask: task.checked }]">
-                  {{ task.title }}
+            <uni-swipe-action>
+              <uni-swipe-action-item
+                v-for="(task, index2) in list.tasks"
+                :key="index2"
+                :right-options="options"
+                @click="bindClick($event, task.taskId, list.listId)"
+                @change="swipeChange($event, index)"
+                class="task-wrapper"
+              >
+                <div class="task" v-if="task.title">
+                  <checkbox-group @change="checkTask(task)">
+                    <checkbox
+                      value="0"
+                      :checked="task.checked"
+                      color="#FFCC33"
+                      style="transform: scale(0.7)"
+                    />
+                  </checkbox-group>
+                  <div :class="['title', { checkedTask: task.checked }]">
+                    {{ task.title }}
+                  </div>
                 </div>
-                <div class="detail">
-                  <image
-                    @click="switchPage('/pages/task/task?id=' + task.listId)"
-                    class="icon"
-                    mode="widthFix"
-                    src="../../static/icons/arrow-right.png"
-                  ></image>
-                </div>
-              </div>
-            </div>
+              </uni-swipe-action-item>
+            </uni-swipe-action>
           </div>
         </div>
       </div>
@@ -155,8 +174,8 @@
       ></image>
     </view>
     <uni-popup ref="popup" type="dialog">
-      <addList @hide="closePopup('popup2')"></addList
-    ></uni-popup>
+      <addList @hide="closePopup('popup2')"></addList>
+    </uni-popup>
     <uni-popup ref="popup2" type="dialog">
       <joinTask @hide="closePopup('popup2')"></joinTask>
     </uni-popup>
@@ -165,15 +184,22 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { List, ListTask, Task, User } from "@/typings/index";
+import { List, Task, User } from "@/typings/index";
 import addList from "../list/addList.vue";
-import { updateTask } from "@/api/tasks";
+import { deleteRelation, sharedTasks, updateTask } from "@/api/tasks";
 import { deleteLists, listLists } from "@/api/lists";
 import joinTask from "../task/joinTask.vue";
+
 export default Vue.extend({
   data() {
     return {
-      lists: [] as List[],
+      lists: [
+        {
+          listId: 0,
+          title: "分配给我的",
+          tasks: [] as Task[],
+        },
+      ] as List[],
       show: true,
       activeMenu: -1,
       searchVO: {
@@ -181,6 +207,20 @@ export default Vue.extend({
       },
       finish: false,
       active: false,
+      options: [
+        {
+          text: "删除",
+          style: {
+            backgroundColor: "#007aff",
+          },
+        },
+        {
+          text: "详情",
+          style: {
+            backgroundColor: "#dd524d",
+          },
+        },
+      ],
     };
   },
   computed: {
@@ -188,26 +228,69 @@ export default Vue.extend({
       return this.$store.state.userInfo as User;
     },
   },
-  components: { addList, joinTask },
+  components: {
+    addList,
+    joinTask,
+  },
   onLoad() {
     uni.getStorage({
       key: "token",
       success: (res) => {
-        console.log(res);
         this.$store.dispatch("getUserInfo");
+        this.loadShareTask();
+      },
+    });
+  },
+  onShow() {
+    uni.getStorage({
+      key: "token",
+      success: (res) => {
         this.getList(true);
       },
     });
   },
   methods: {
+    bindClick(e: any, taskId: number, listId: number) {
+      if (e.content.text == "删除") {
+        uni.showModal({
+          title: "是否确认删除该任务?",
+          success: (res) => {
+            if (res.confirm) {
+              deleteRelation({
+                taskId,
+                listId,
+              }).then((res) => {
+                if (res.data == true) {
+                  this.getList(true);
+                  this.loadShareTask();
+                }
+              });
+            }
+          },
+        });
+      } else {
+        this.switchPage("/pages/task/task?id=" + taskId);
+      }
+      console.log(
+        "点击了" +
+          (e.position === "left" ? "左侧" : "右侧") +
+          e.content.text +
+          "按钮"
+      );
+    },
+    swipeChange(e: any, index: number) {
+      console.log("当前状态：" + e + "，下标：" + index);
+    },
     getList(init = false) {
       if (init) {
         this.activeMenu = -1;
-        this.searchVO = { pageNum: 1 };
+        this.searchVO = {
+          pageNum: 1,
+        };
       }
       listLists(this.searchVO).then((res) => {
         if (init) {
-          this.lists = [];
+          this.lists.splice(1, this.lists.length - 1);
         }
         if (res.data.size > res.data.records.length) {
           this.finish = true;
@@ -224,7 +307,9 @@ export default Vue.extend({
       }
     },
     switchPage(value: string) {
-      uni.navigateTo({ url: value });
+      uni.navigateTo({
+        url: value,
+      });
     },
     openPopup(name: string) {
       let popup = this.$refs[name] as any;
@@ -240,7 +325,11 @@ export default Vue.extend({
       updateTask(task).then((res) => {
         console.log(res);
       });
-      console.log(task);
+    },
+    loadShareTask() {
+      sharedTasks().then((res) => {
+        this.lists[0].tasks = res.data;
+      });
     },
     deleteList(id: number) {
       uni.showModal({
@@ -267,15 +356,18 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 page {
-  background-color: $uni-bg-color-grey;
+  background-color: white;
 }
+
 @keyframes mymove {
   0% {
     transform: scale(1);
   }
+
   25% {
     transform: scale(0.8);
   }
+
   50% {
     transform: scale(1.1);
   }
@@ -293,16 +385,18 @@ page {
   0% {
     transform: scale(0);
   }
+
   100% {
     transform: scale(1);
   }
 }
 
 .divider {
-  margin-top: 90upx;
   display: flex;
-  padding: 40rpx 0 10rpx 40rpx;
+  padding: 40rpx 0 40rpx 40rpx;
+  padding-top: 140rpx;
   align-items: flex-end;
+  background-color: white;
 
   .front {
     font-size: 35rpx;
@@ -315,9 +409,10 @@ page {
     color: #c3c3c3;
   }
 }
+
 .user-head {
   position: relative;
-
+  display: flex;
   .background {
     position: relative;
     max-width: 100%;
@@ -384,38 +479,52 @@ page {
     }
   }
 }
+
 .list-section {
-  margin: 20rpx;
+  // margin: 20rpx;
+  padding: 20rpx;
   display: flex;
   justify-content: space-around;
+  background-color: $uni-bg-color-grey;
+  min-height: 200vh;
+  border-radius: 40rpx;
 
   .top {
     display: flex;
+
     .title {
       font-size: 30rpx;
     }
+
     .btns {
       position: relative;
       flex: 2;
       display: flex;
       justify-content: flex-end;
+
       .icon {
         transition: transform 0.2s;
         width: 40rpx;
       }
+
       .activeIcon {
         transform: rotate(90deg);
       }
+
       .tips {
         z-index: 2;
         animation: scaleMenu 0.2s ease-out alternate;
+
         ul {
+          font-size: 25rpx;
           padding-inline: 0;
+
           li {
             margin-top: 10rpx;
           }
         }
-        width: 100rpx;
+
+        width: 110rpx;
         border-radius: 15rpx;
         padding: 20rpx 20rpx 20rpx 40rpx;
         background-color: white;
@@ -426,25 +535,34 @@ page {
       }
     }
   }
+
   .lists {
     flex: 1;
   }
+
   .left-lists {
     margin-right: 10rpx;
   }
+
   .right-lists {
     margin-left: 10rpx;
   }
+
   .list {
     // width: 300rpx;
     padding: 15rpx;
     background-color: white;
     border-radius: 15rpx;
     margin-top: 20rpx;
-    .task {
+    min-height: 70rpx;
+
+    .task-wrapper {
       margin-top: 20rpx;
-      padding: 10rpx;
       margin-right: 20rpx;
+    }
+
+    .task {
+      padding: 10rpx;
       background-color: rgba(245, 245, 245, 0.549);
       border-radius: 10rpx;
       display: flex;
@@ -453,15 +571,18 @@ page {
       .checkedTask {
         text-decoration: line-through;
       }
+
       .title {
         font-size: 25rpx;
         margin-right: 15rpx;
         color: $uni-text-color-grey;
       }
+
       .detail {
         flex: 2;
         display: flex;
         justify-content: flex-end;
+
         .icon {
           opacity: 0.5;
           width: 30rpx;
@@ -470,6 +591,7 @@ page {
     }
   }
 }
+
 @mixin base($color) {
   position: fixed;
   bottom: 300rpx;
@@ -486,35 +608,49 @@ page {
   box-shadow: 10rpx 10rpx 15rpx rgba(245, 222, 179, 0.725);
   transition: transform 0.3s ease-in;
 }
+
 .plus {
   @include base(wheat);
+
   &.active {
     z-index: 1;
     animation: mymove 0.5s ease-in-out;
   }
 }
+
 .plus1 {
   @include base(white);
+
   image {
     width: 70rpx;
     height: 70rpx;
   }
+
   z-index: -9;
+
   &.active {
     z-index: 1;
     transform: translate(-75rpx, -129rpx) scale(0.8);
   }
 }
+
 .plus2 {
   @include base(white);
+
   image {
     width: 70rpx;
     height: 70rpx;
   }
+
   z-index: -9;
+
   &.active {
     z-index: 1;
     transform: translate(-150rpx, 0rpx) scale(0.8);
   }
+}
+
+::v-deep .button-group--right {
+  margin-left: 20rpx;
 }
 </style>

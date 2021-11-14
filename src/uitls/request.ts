@@ -1,4 +1,5 @@
 const baseUrl =process.env.VUE_APP_BASE_URL
+//  const baseUrl ="http://localhost/plan"
 console.log(baseUrl)
 import store from "@/store"
 const requestWithToken = (

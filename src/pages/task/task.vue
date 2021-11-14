@@ -13,6 +13,14 @@
         <div class="row">
           <div class="step-wrapper">
             <div class="step" v-for="(step, index) in steps">
+              <checkbox-group @change="step.checked=!step.checked">
+                <checkbox
+                  value="0"
+                  :checked="step.checked"
+                  color="#FFCC33"
+                  style="transform: scale(0.7)"
+                />
+              </checkbox-group>
               <uni-easyinput
                 type="text"
                 v-model="step.content"
@@ -32,7 +40,7 @@
           </div>
         </div>
       </uni-forms-item>
-      <uni-forms-item name="checked" label="描述" class="form-item">
+      <uni-forms-item name="description" label="描述" class="form-item">
         <div class="row">
           <textarea
             class="desc"
@@ -159,7 +167,7 @@ export default Vue.extend({
   },
   onLoad(options: any) {
     showTask({ id: options.id }).then((res) => {
-      let up = this.$refs.uploader as any;      
+      let up = this.$refs.uploader as any;
       let data = res.data as Task & { steps: Step[] };
       if (data.deadline) {
         this.date = dateFormat(new Date(data.deadline as string));
@@ -217,6 +225,8 @@ page {
       .step {
         display: flex;
         align-items: center;
+        margin-top: 10rpx;
+
         .close {
           margin-left: 20rpx;
           width: 40rpx;

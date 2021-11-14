@@ -18,7 +18,7 @@
         password="true"
       />
       <view class="reset" @click="switchPage('/pages/login/login')">去登录</view>
-      <button class="submit" @click="submit">注册</button>
+      <button class="submit" plain="true" @click="submit">注册</button>
     </view>
   </view>
 </template>
@@ -51,11 +51,13 @@ export default Vue.extend({
 </script>
 <style lang="scss" scoped>
 page {
-  background-color: white;
-  background: linear-gradient(to bottom, #f07f85 0%, #fae1e2 100%);
+  // background-color: white;
+  // background: linear-gradient(to bottom, #f07f85 0%, #fae1e2 100%);
   height: 100vh;
 }
 .login-wrapper {
+  background: linear-gradient(to bottom, #f07f85 0%, #fae1e2 100%);
+	
   position: relative;
   height: 100vh;
   overflow: hidden;

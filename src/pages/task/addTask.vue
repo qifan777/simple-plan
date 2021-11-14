@@ -11,7 +11,7 @@
       <uni-forms-item label="步骤">
         <div class="row">
           <div class="step-wrapper">
-            <div class="step" v-for="(step, index) in steps">
+            <div class="step" v-for="(step, index) in steps" :key="index">
               <uni-easyinput
                 type="text"
                 v-model="step.content"
@@ -31,7 +31,7 @@
           </div>
         </div>
       </uni-forms-item>
-      <uni-forms-item name="checked" label="描述">
+      <uni-forms-item name="description" label="描述">
         <div class="row">
           <textarea
             class="desc"
@@ -152,6 +152,8 @@ page {
     }
     .step-wrapper {
       .step {
+                margin-top: 10rpx;
+
         display: flex;
         align-items: center;
         .close {

@@ -83,6 +83,7 @@
         </view>
       </uni-popup-dialog>
     </uni-popup>
+    <button plain="true" class="logout" @click="logout">退出登录</button>
   </view>
 </template>
 
@@ -116,7 +117,7 @@ export default Vue.extend({
         this.tempInfo = JSON.parse(JSON.stringify(this.userInfo)) as User;
       }, 400);
     },
-    signOut() {
+    logout() {
       uni.removeStorage({
         key: "token",
         success: () => {
@@ -284,5 +285,18 @@ export default Vue.extend({
   width: 100upx;
   height: 100upx;
   border-radius: 20upx;
+}
+.logout{
+    width: 300rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    border-radius: 40rpx;
+    margin-top: 50rpx;
+    margin-bottom: 30rpx;
+    border: 0;
+    color: black;
+    box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
+	    background: linear-gradient(to right, #fafafa 0%, #cccccc 100%);
+
 }
 </style>

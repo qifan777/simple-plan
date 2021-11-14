@@ -18,3 +18,9 @@ export const shareTask = (data: any) => {
 export const joinTask = (data: any) => {
   return requestWithToken("/task/join", "GET", data);
 };
+export const sharedTasks = () => {
+  return requestWithToken("/task/sharedTasks", "GET", null);
+};
+export const deleteRelation=(data:any)=>{
+  return requestWithToken("/task/deleteRelation","GET",data)
+}

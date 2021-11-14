@@ -53,9 +53,9 @@ export type List = {
   listId: number
   title: string
   userId: number
-  createdTime: Date
-  updatedTime: Date
-  tasks:Task[]
+  createdTime?: Date
+  updatedTime?: Date
+  tasks?:Task[]
 }
 
 /**
