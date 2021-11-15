@@ -6,6 +6,9 @@
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
+        "compatible" : {
+            "ignoreVersion" : true
+        },
         /* 5+App特有相关 */
         "modules" : {},
         /* 模块配置 */
@@ -40,7 +43,9 @@
             },
             "ios" : {},
             /* ios打包配置 */
-            "sdkConfigs" : {},
+            "sdkConfigs" : {
+                "ad" : {}
+            },
             "icons" : {
                 "android" : {
                     "hdpi" : "unpackage/res/icons/72x72.png",
@@ -82,7 +87,23 @@
             }
         },
         /* SDK配置 */
-        "usingComponents" : true
+        "usingComponents" : true,
+        "nativePlugins" : {
+            "GuoWei-SelectFileModule" : {
+                "__plugin_info__" : {
+                    "name" : "Android文件选择",
+                    "description" : "目录方式，选择Android手机储存文件，支持多选、过滤",
+                    "platforms" : "Android",
+                    "url" : "https://ext.dcloud.net.cn/plugin?id=4607",
+                    "android_package_name" : "com.jarcheng",
+                    "ios_bundle_id" : "",
+                    "isCloud" : true,
+                    "bought" : 1,
+                    "pid" : "4607",
+                    "parameters" : {}
+                }
+            }
+        }
     },
     "quickapp" : {},
     /* 快应用特有相关 */

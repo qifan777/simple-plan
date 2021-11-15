@@ -68,7 +68,7 @@
                     >
                       添加任务
                     </li>
-                    <li>编辑列表</li>
+                    <li @click="updateList(list)">编辑列表</li>
                     <li @click="deleteList(list.listId)">删除列表</li>
                   </ul>
                 </div>
@@ -126,7 +126,7 @@
                     >
                       添加任务
                     </li>
-                    <li>编辑列表</li>
+                    <li @click="updateList(list)">编辑列表</li>
                     <li @click="deleteList(list.listId)">删除列表</li>
                   </ul>
                 </div>
@@ -174,10 +174,13 @@
       ></image>
     </view>
     <uni-popup ref="popup" type="dialog">
-      <addList @hide="closePopup('popup2')"></addList>
+      <addList @hide="closePopup('popup')"></addList>
     </uni-popup>
     <uni-popup ref="popup2" type="dialog">
       <joinTask @hide="closePopup('popup2')"></joinTask>
+    </uni-popup>
+    <uni-popup ref="popup3" type="dialog">
+      <updateListVue :list="list" @hide="closePopup('popup3')"></updateListVue>
     </uni-popup>
   </div>
 </template>
@@ -189,7 +192,7 @@ import addList from "../list/addList.vue";
 import { deleteRelation, sharedTasks, updateTask } from "@/api/tasks";
 import { deleteLists, listLists } from "@/api/lists";
 import joinTask from "../task/joinTask.vue";
-
+import updateListVue from "../list/updateList.vue";
 export default Vue.extend({
   data() {
     return {
@@ -200,6 +203,7 @@ export default Vue.extend({
           tasks: [] as Task[],
         },
       ] as List[],
+      list: {} as List,
       show: true,
       activeMenu: -1,
       searchVO: {
@@ -231,6 +235,7 @@ export default Vue.extend({
   components: {
     addList,
     joinTask,
+    updateListVue,
   },
   onLoad() {
     uni.getStorage({
@@ -311,6 +316,10 @@ export default Vue.extend({
         url: value,
       });
     },
+    updateList(list: List) {
+      this.list = list;
+      this.openPopup("popup3");
+    },
     openPopup(name: string) {
       let popup = this.$refs[name] as any;
       popup.open();
@@ -322,6 +331,7 @@ export default Vue.extend({
     },
     checkTask(task: Task) {
       task.checked = !task.checked;
+      task.steps = [];
       updateTask(task).then((res) => {
         console.log(res);
       });
@@ -514,13 +524,12 @@ page {
       .tips {
         z-index: 2;
         animation: scaleMenu 0.2s ease-out alternate;
-
         ul {
           font-size: 25rpx;
           padding-inline: 0;
 
           li {
-            margin-top: 10rpx;
+            margin-top: 20rpx;
           }
         }
 

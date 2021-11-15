@@ -9,3 +9,6 @@ export const createList = (data: any) => {
 export const deleteLists=(data:any)=>{
   return requestWithToken('/list/delete?ids='+data,'GET',null)
 }
+export const updateList=(data:any)=>{
+  return requestWithToken('/list/update','POST',data)
+}

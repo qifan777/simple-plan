@@ -8,7 +8,7 @@
           src="@/static/icons/enclosure.png"
         >
         </image>
-        <div class="filename">{{ file.name }}</div>
+        <div class="filename" @click="downLoadFile(file)">{{ file.name }}</div>
         <image
           class="close"
           src="@/static/icons/close.png"
@@ -45,9 +45,12 @@ export default Vue.extend({
   },
   methods: {
     chooseFile() {
+      //#ifdef H5
       uni.chooseFile({
         success: (result) => {
-          let tempFiles = result.tempFiles as (File & { path: string })[];
+          let tempFiles = result.tempFiles as (File & {
+            path: string;
+          })[];
           tempFiles.forEach((file) => {
             this.files.push({
               name: file.name,
@@ -57,11 +60,36 @@ export default Vue.extend({
           });
         },
       });
+      //#endif
+      //#ifdef APP-PLUS
+      const plugin = uni.requireNativePlugin("GuoWei-SelectFileModule") as any;
+      plugin.chooseFile(
+        {
+          count: 10,
+          rootDirName: "根目录",
+          themeColor: "#00ff00",
+          folderIconColor: "#ff0000",
+          fileIconColor: "#0000ff",
+        },
+        (result: any) => {
+          let tempFiles = result.files;
+          console.log(tempFiles);
+          tempFiles.forEach((file: any) => {
+            this.files.push({
+              name: file.name,
+              path: file.url,
+              status: "ready",
+            });
+          });
+        }
+      );
+      //#endif
     },
     async upload() {
-      let unUploadFiles = this.files.filter((value) =>
-        value.path.startsWith("blob")
+      let unUploadFiles = this.files.filter(
+        (value) => !value.path.startsWith("http")
       );
+
       for (let index = 0; index < unUploadFiles.length; index++) {
         let file = unUploadFiles[index];
         file.status = "uploading";
@@ -79,6 +107,37 @@ export default Vue.extend({
     setFiles(filesArr: myFile[]) {
       this.files = filesArr;
     },
+    downLoadFile(file: myFile) {
+      let image = ["bmp", "jpg", "jpeg", "png", "gif"];
+      let document = ["doc", "xls", "ppt", "pdf", "docx", "xlsx", "pptx"];
+      let postFix = file.name.split(".").pop() as string;
+      postFix = postFix.toLowerCase();
+      if (image.includes(postFix)) {
+        uni.previewImage({ urls: [file.path] });
+      } else if (document.includes(postFix)) {
+        uni.downloadFile({
+          url: file.path,
+          success: (res) => {
+            uni.openDocument({ filePath: res.tempFilePath });
+          },
+        });
+      } else {
+        uni.downloadFile({
+          url: file.path,
+          success: (res) => {
+            uni.saveFile({
+              tempFilePath: res.tempFilePath,
+              success: (res) => {
+                uni.showModal({
+                  title: "文件已保存到",
+                  content: res.savedFilePath,
+                });
+              },
+            });
+          },
+        });
+      }
+    },
   },
 });
 </script>
@@ -93,9 +152,11 @@ export default Vue.extend({
   .file {
     display: flex;
     align-items: center;
+
     .enclosure {
       width: 60rpx;
     }
+
     .filename {
       margin-left: 15rpx;
       color: blue;
@@ -110,14 +171,17 @@ export default Vue.extend({
 
       width: 50rpx;
     }
+
     .close {
       margin-left: 20rpx;
       width: 40rpx;
     }
   }
+
   .choose {
     width: 90rpx;
   }
+
   .btn {
     margin: 0;
     margin-top: 10rpx;
@@ -127,6 +191,7 @@ export default Vue.extend({
     line-height: 40rpx;
   }
 }
+
 .loading {
   width: 16rpx;
   height: 16rpx;

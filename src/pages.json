@@ -42,12 +42,6 @@
       "style": {
         "navigationBarTitleText": ""
       }
-    },
-    {
-      "path": "pages/three/three",
-      "style": {
-        "navigationBarTitleText": ""
-      }
     }
   ],
   "globalStyle": {
