@@ -13,7 +13,7 @@
         <div class="row">
           <div class="step-wrapper">
             <div class="step" v-for="(step, index) in steps">
-              <checkbox-group @change="step.checked=!step.checked">
+              <checkbox-group @change="step.checked = !step.checked">
                 <checkbox
                   value="0"
                   :checked="step.checked"
@@ -64,15 +64,19 @@
           <uni-datetime-picker
             :border="false"
             type="datetime"
-            @change="bindDateChange"
+            v-model="task.deadline"
+            @change="deadLineChange"
           />
         </div>
       </uni-forms-item>
-      <!-- <uni-forms-item label="提醒日期" name="remindTime" class="form-item">
+      <!-- <uni-forms-item label="提醒日期" name="remindTime">
         <div class="row">
-          <picker class="time" mode="time" @change="bindTimeChange">
-            <view class="uni-input">{{ time }}</view>
-          </picker>
+          <uni-datetime-picker
+            :border="false"
+            type="datetime"
+            v-model="task.remindTime"
+            @change="remindTimeChange"
+          />
         </div>
       </uni-forms-item> -->
       <uni-forms-item label="附件" class="form-item">
@@ -105,22 +109,18 @@ export default Vue.extend({
     };
   },
   methods: {
-    bindDateChange(value: any) {
-      console.log(value);
-      this.date = value;
-      let date2 = this.date;
-      this.task.deadline = date2;
+    deadLineChange(value: string) {
+      if (value.length < 12) {
+        value = value + "00:00:00";
+      }
+      this.task.deadline = value;
     },
-    bindTimeChange(value: Event & { detail: any }) {
-      this.time = value.detail.value;
-      const date = new Date();
-      let year = date.getFullYear();
-      let month: number | string = date.getMonth() + 1;
-      let day: number | string = date.getDate();
-      month = month > 9 ? month : "0" + month;
-      day = day > 9 ? day : "0" + day;
-      let time2 = `${year}-${month}-${day} ${this.time}:00`;
-      this.task.remindTime = time2;
+    remindTimeChange(value: string) {
+      if (value.length < 12) {
+        uni.showToast({title:'请选择详细时间',icon:'none'})
+        return
+      }
+      this.task.remindTime = value;
     },
     async submit() {
       let form = this.$refs.form as any;
@@ -134,9 +134,12 @@ export default Vue.extend({
         });
         return;
       }
-      if (uploadFiles && uploadFiles.length > 0) {
-        this.task.appendix = JSON.stringify(uploadFiles);
-      }
+      console.log(uploadFiles);
+
+      this.task.appendix = JSON.stringify(uploadFiles);
+
+      // if (uploadFiles && uploadFiles.length > 0) {
+      // }
       this.task.steps = this.steps.filter((x) => x.content);
       updateTask(this.task).then((res) => {
         if (res.data == true) {
@@ -152,13 +155,16 @@ export default Vue.extend({
       this.steps.splice(index, 1);
     },
     share(taskId: number) {
+      if (!taskId) {
+        return;
+      }
       shareTask({ taskId: taskId }).then((res) => {
         uni.showModal({
           title: "确认复制分享链接",
           content: res.data,
           success: (result) => {
             if (result.confirm) {
-              uni.setClipboardData(res.data);
+              uni.setClipboardData({ data: res.data });
             }
           },
         });
@@ -169,12 +175,6 @@ export default Vue.extend({
     showTask({ id: options.id }).then((res) => {
       let up = this.$refs.uploader as any;
       let data = res.data as Task & { steps: Step[] };
-      if (data.deadline) {
-        this.date = dateFormat(new Date(data.deadline as string));
-      }
-      if (data.remindTime) {
-        this.time = dateFormat(new Date(data.remindTime as string));
-      }
       this.steps = data.steps || [];
       if (data.appendix) {
         up.setFiles(JSON.parse(data.appendix) as myFile[]);

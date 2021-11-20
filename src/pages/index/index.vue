@@ -92,7 +92,21 @@
                       style="transform: scale(0.7)"
                     />
                   </checkbox-group>
-                  <div :class="['title', { checkedTask: task.checked }]">
+                  <div
+                    :class="[
+                      'title',
+                      { checkedTask: task.leftTime == 0 },
+                      {
+                        todoTask:
+                          task.leftTime &&
+                          task.leftTime < 24 &&
+                          task.leftTime >= 0,
+                      },
+                      {
+                        undoTask: task.leftTime && task.leftTime < 0,
+                      },
+                    ]"
+                  >
                     {{ task.title }}
                   </div>
                 </div>
@@ -193,6 +207,7 @@ import { deleteRelation, sharedTasks, updateTask } from "@/api/tasks";
 import { deleteLists, listLists } from "@/api/lists";
 import joinTask from "../task/joinTask.vue";
 import updateListVue from "../list/updateList.vue";
+import moment, { Moment } from "moment";
 export default Vue.extend({
   data() {
     return {
@@ -276,15 +291,24 @@ export default Vue.extend({
       } else {
         this.switchPage("/pages/task/task?id=" + taskId);
       }
-      console.log(
-        "点击了" +
-          (e.position === "left" ? "左侧" : "右侧") +
-          e.content.text +
-          "按钮"
-      );
     },
-    swipeChange(e: any, index: number) {
-      console.log("当前状态：" + e + "，下标：" + index);
+    swipeChange(e: any, index: number) {},
+    computeLists(datas: List[]) {
+      for (const list of datas) {
+        if (!list.tasks) {
+          continue;
+        }
+        for (const task of list.tasks) {
+          if (task.deadline) {
+            let toNow = moment(task.deadline).diff(moment(), "hours");
+            if (task.checked) {
+              this.$set(task, "leftTime", 0);
+            } else {
+              this.$set(task, "leftTime", toNow);
+            }
+          }
+        }
+      }
     },
     getList(init = false) {
       if (init) {
@@ -297,10 +321,12 @@ export default Vue.extend({
         if (init) {
           this.lists.splice(1, this.lists.length - 1);
         }
-        if (res.data.size > res.data.records.length) {
+        let datas = res.data.records as List[];
+        if (res.data.size > datas.length) {
           this.finish = true;
         }
-        this.lists.push(...res.data.records);
+        this.computeLists(datas);
+        this.lists.push(...datas);
         this.searchVO.pageNum++;
       });
     },
@@ -339,6 +365,7 @@ export default Vue.extend({
     loadShareTask() {
       sharedTasks().then((res) => {
         this.lists[0].tasks = res.data;
+        this.computeLists([this.lists[0]]);
       });
     },
     deleteList(id: number) {
@@ -577,14 +604,19 @@ page {
       display: flex;
       align-items: center;
 
-      .checkedTask {
-        text-decoration: line-through;
-      }
-
       .title {
         font-size: 25rpx;
         margin-right: 15rpx;
         color: $uni-text-color-grey;
+      }
+      .checkedTask {
+        text-decoration: line-through;
+      }
+      .todoTask {
+        color: orange;
+      }
+      .undoTask {
+        color: red;
       }
 
       .detail {

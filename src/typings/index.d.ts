@@ -29,7 +29,8 @@ export type Task = {
   createdTime: Date | string
   updatedTime: Date | string
   listId:number
-  steps:Step[]
+  steps:Step[],
+  leftTime?:number,
 }
 
 /**

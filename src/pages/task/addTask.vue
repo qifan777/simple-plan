@@ -24,6 +24,7 @@
                 @click="removeStep(index)"
               ></image>
             </div>
+
             <div class="next" @click="addStep">
               <div class="label">+</div>
               <div>下一步</div>
@@ -45,10 +46,21 @@
           <uni-datetime-picker
             :border="false"
             type="datetime"
-            @change="bindDateChange"
+            v-model="task.deadline"
+            @change="deadLineChange"
           />
         </div>
       </uni-forms-item>
+      <!-- <uni-forms-item label="提醒日期" name="remindTime">
+        <div class="row">
+          <uni-datetime-picker
+            :border="false"
+            type="datetime"
+            v-model="task.remindTime"
+            @change="remindTimeChange"
+          />
+        </div>
+      </uni-forms-item> -->
       <uni-forms-item label="附件">
         <uploader ref="uploader"></uploader>
       </uni-forms-item>
@@ -79,11 +91,18 @@ export default Vue.extend({
     };
   },
   methods: {
-    bindDateChange(value: any) {
-      console.log(value);
-      this.date = value;
-      let date2 = this.date;
-      this.task.deadline = date2;
+    deadLineChange(value: string) {
+      if (value.length < 12) {
+        value = value + "00:00:00";
+      }
+      this.task.deadline = value;
+    },
+    remindTimeChange(value: string) {
+      if (value.length < 12) {
+        uni.showToast({ title: "请选择详细时间", icon: "none" });
+        return;
+      }
+      this.task.remindTime = value;
     },
     async submit() {
       let form = this.$refs.form as any;
@@ -97,9 +116,7 @@ export default Vue.extend({
         });
         return;
       }
-      if (uploadFiles && uploadFiles.length > 0) {
-        this.task.appendix = JSON.stringify(uploadFiles);
-      }
+      this.task.appendix = JSON.stringify(uploadFiles);
       this.task.listId = this.listId;
       this.task.steps = this.steps.filter((x) => x.content);
       createTask(this.task).then((res) => {
@@ -152,7 +169,7 @@ page {
     }
     .step-wrapper {
       .step {
-                margin-top: 10rpx;
+        margin-top: 10rpx;
 
         display: flex;
         align-items: center;
@@ -186,8 +203,8 @@ page {
   }
 }
 
-   ::v-deep .uni-forms-item__inner {
-    padding: 10rpx;
-    border-bottom: 1rpx solid rgba(143, 142, 142, 0.089);
-  }
+::v-deep .uni-forms-item__inner {
+  padding: 10rpx;
+  border-bottom: 1rpx solid rgba(143, 142, 142, 0.089);
+}
 </style>

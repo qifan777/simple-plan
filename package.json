@@ -61,6 +61,7 @@
     "@vue/shared": "^3.0.0",
     "core-js": "^3.6.5",
     "flyio": "^0.6.2",
+    "moment": "^2.29.1",
     "regenerator-runtime": "^0.12.1",
     "sass": "^1.43.4",
     "sass-loader": "10.1.0",
