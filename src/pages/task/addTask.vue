@@ -34,11 +34,12 @@
       </uni-forms-item>
       <uni-forms-item name="description" label="描述">
         <div class="row">
-          <textarea
+          <myeditor ref="myEditor"></myeditor>
+          <!-- <textarea
             class="desc"
             v-model="task.description"
             placeholder="描述一下任务吧~"
-          ></textarea>
+          ></textarea> -->
         </div>
       </uni-forms-item>
       <uni-forms-item label="截至日期" name="deadline">
@@ -73,9 +74,12 @@ import Vue from "vue";
 import { myFile, Step, Task } from "@/typings";
 import { createTask } from "@/api/tasks";
 import uploader from "@/components/uploader.vue";
+import myeditor from "@/components/editor/editor.vue";
+
 export default Vue.extend({
   components: {
     uploader,
+    myeditor,
   },
   data() {
     return {
@@ -108,6 +112,9 @@ export default Vue.extend({
       let form = this.$refs.form as any;
       let up = this.$refs.uploader as any;
       let res = (await form.validate()) as any[];
+      let myEditor = this.$refs.myEditor as any;
+      let html = await myEditor.store();
+      this.task.description = html;
       let uploadFiles = up.getUploadFiles();
       if (uploadFiles.length != up.files.length) {
         uni.showToast({

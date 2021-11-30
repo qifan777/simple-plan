@@ -12,7 +12,7 @@
       <uni-forms-item label="步骤" class="form-item">
         <div class="row">
           <div class="step-wrapper">
-            <div class="step" v-for="(step, index) in steps">
+            <div class="step" v-for="(step, index) in steps" :key="index">
               <checkbox-group @change="step.checked = !step.checked">
                 <checkbox
                   value="0"
@@ -42,13 +42,10 @@
       </uni-forms-item>
       <uni-forms-item name="description" label="描述" class="form-item">
         <div class="row">
-          <textarea
-            class="desc"
-            v-model="task.description"
-            placeholder="描述一下任务吧~"
-          ></textarea>
+          <myeditor ref="myEditor"></myeditor>
         </div>
       </uni-forms-item>
+
       <uni-forms-item label="分配任务" class="form-item">
         <div class="row" @click="share(task.taskId)">
           <image
@@ -92,9 +89,9 @@ import { myFile, Step, Task } from "@/typings";
 import { createTask, shareTask, showTask, updateTask } from "@/api/tasks";
 import { dateFormat } from "@/api/common";
 import uploader from "@/components/uploader.vue";
-
+import myeditor from "@/components/editor/editor.vue";
 export default Vue.extend({
-  components: { uploader },
+  components: { uploader, myeditor },
   data() {
     return {
       date: "选择截至日期",
@@ -106,6 +103,7 @@ export default Vue.extend({
           rules: [{ required: true, errorMessage: "请填写任务标题" }],
         },
       },
+      myEditor: {} as any,
     };
   },
   methods: {
@@ -117,8 +115,8 @@ export default Vue.extend({
     },
     remindTimeChange(value: string) {
       if (value.length < 12) {
-        uni.showToast({title:'请选择详细时间',icon:'none'})
-        return
+        uni.showToast({ title: "请选择详细时间", icon: "none" });
+        return;
       }
       this.task.remindTime = value;
     },
@@ -126,6 +124,8 @@ export default Vue.extend({
       let form = this.$refs.form as any;
       let up = this.$refs.uploader as any;
       let res = (await form.validate()) as any[];
+      let html = await this.myEditor.store();
+      this.task.description = html;
       let uploadFiles = up.getUploadFiles();
       if (uploadFiles.length != up.files.length) {
         uni.showToast({
@@ -134,8 +134,6 @@ export default Vue.extend({
         });
         return;
       }
-      console.log(uploadFiles);
-
       this.task.appendix = JSON.stringify(uploadFiles);
 
       // if (uploadFiles && uploadFiles.length > 0) {
@@ -170,6 +168,12 @@ export default Vue.extend({
         });
       });
     },
+  },
+  mounted() {
+    this.myEditor = this.$refs.myEditor as any;
+    setTimeout(() => {
+      this.myEditor.setContent(this.task.description);
+    }, 1000);
   },
   onLoad(options: any) {
     showTask({ id: options.id }).then((res) => {

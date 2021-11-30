@@ -109,6 +109,10 @@
                   >
                     {{ task.title }}
                   </div>
+                  <div class="leftTime" v-if="task.leftTime">
+                    <image src="@/static/icons/leftTime.png"></image>
+                    <span :class="['time',{undoTask:task.leftTime<0}]">{{ Math.floor(task.leftTime / 24 )}}</span>
+                  </div>
                 </div>
               </uni-swipe-action-item>
             </uni-swipe-action>
@@ -164,8 +168,26 @@
                       style="transform: scale(0.7)"
                     />
                   </checkbox-group>
-                  <div :class="['title', { checkedTask: task.checked }]">
+                  <div
+                    :class="[
+                      'title',
+                      { checkedTask: task.leftTime == 0 },
+                      {
+                        todoTask:
+                          task.leftTime &&
+                          task.leftTime < 24 &&
+                          task.leftTime >= 0,
+                      },
+                      {
+                        undoTask: task.leftTime && task.leftTime < 0,
+                      },
+                    ]"
+                  >
                     {{ task.title }}
+                  </div>
+                  <div class="leftTime" v-if="task.leftTime">
+                    <image src="@/static/icons/leftTime.png"></image>
+                    <span :class="['time',{undoTask:task.leftTime<0}]">{{ Math.floor(task.leftTime / 24 )}}</span>
                   </div>
                 </div>
               </uni-swipe-action-item>
@@ -358,9 +380,7 @@ export default Vue.extend({
     checkTask(task: Task) {
       task.checked = !task.checked;
       task.steps = [];
-      updateTask(task).then((res) => {
-        console.log(res);
-      });
+      updateTask(task).then((res) => {});
     },
     loadShareTask() {
       sharedTasks().then((res) => {
@@ -603,10 +623,21 @@ page {
       border-radius: 10rpx;
       display: flex;
       align-items: center;
-
+      .leftTime {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        image {
+          width: 35rpx;
+          height: 35rpx;
+          margin-right: 10rpx;
+        }
+        font-size: 15rpx;
+      }
       .title {
         font-size: 25rpx;
         margin-right: 15rpx;
+        flex: 2;
         color: $uni-text-color-grey;
       }
       .checkedTask {
