@@ -35,11 +35,6 @@
       <uni-forms-item name="description" label="描述">
         <div class="row">
           <myeditor ref="myEditor"></myeditor>
-          <!-- <textarea
-            class="desc"
-            v-model="task.description"
-            placeholder="描述一下任务吧~"
-          ></textarea> -->
         </div>
       </uni-forms-item>
       <uni-forms-item label="截至日期" name="deadline">
@@ -48,7 +43,6 @@
             :border="false"
             type="datetime"
             v-model="task.deadline"
-            @change="deadLineChange"
           />
         </div>
       </uni-forms-item>
@@ -95,12 +89,6 @@ export default Vue.extend({
     };
   },
   methods: {
-    deadLineChange(value: string) {
-      if (value.length < 12) {
-        value = value + "00:00:00";
-      }
-      this.task.deadline = value;
-    },
     remindTimeChange(value: string) {
       if (value.length < 12) {
         uni.showToast({ title: "请选择详细时间", icon: "none" });
@@ -109,12 +97,17 @@ export default Vue.extend({
       this.task.remindTime = value;
     },
     async submit() {
+      //获取表单对象
       let form = this.$refs.form as any;
+      //获取上传表单对象
       let up = this.$refs.uploader as any;
       let res = (await form.validate()) as any[];
+      //获取富文本编辑器对象
       let myEditor = this.$refs.myEditor as any;
+      //上传任务描述
       let html = await myEditor.store();
       this.task.description = html;
+      //获取已经上传的文件
       let uploadFiles = up.getUploadFiles();
       if (uploadFiles.length != up.files.length) {
         uni.showToast({
@@ -126,6 +119,9 @@ export default Vue.extend({
       this.task.appendix = JSON.stringify(uploadFiles);
       this.task.listId = this.listId;
       this.task.steps = this.steps.filter((x) => x.content);
+      if (this.task.deadline && this.task.deadline?.toString().length < 12) {
+        this.task.deadline = this.task.deadline + " 00:00:00";
+      }
       createTask(this.task).then((res) => {
         if (res.data == true) {
           uni.showToast({ title: "添加成功" });
