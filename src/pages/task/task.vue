@@ -65,16 +65,6 @@
           />
         </div>
       </uni-forms-item>
-      <!-- <uni-forms-item label="提醒日期" name="remindTime">
-        <div class="row">
-          <uni-datetime-picker
-            :border="false"
-            type="datetime"
-            v-model="task.remindTime"
-            @change="remindTimeChange"
-          />
-        </div>
-      </uni-forms-item> -->
       <uni-forms-item label="附件" class="form-item">
         <uploader ref="uploader"></uploader>
       </uni-forms-item>
@@ -136,7 +126,7 @@ export default Vue.extend({
       this.task.appendix = JSON.stringify(uploadFiles);
       this.task.steps = this.steps.filter((x) => x.content);
       if (this.task.deadline && this.task.deadline?.toString().length < 12) {
-        this.task.deadline = this.task.deadline + " 00:00:00";
+        this.task.deadline = this.task.deadline + "00:00:00";
       }
       updateTask(this.task).then((res) => {
         if (res.data == true) {

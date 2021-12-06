@@ -107,11 +107,14 @@
                       },
                     ]"
                   >
-                    {{ task.title }}
-                  </div>
-                  <div class="leftTime" v-if="task.leftTime">
-                    <image src="@/static/icons/leftTime.png"></image>
-                    <span :class="['time',{undoTask:task.leftTime<0}]">{{ Math.floor(task.leftTime / 24 )}}</span>
+                    <div>{{ task.title }}</div>
+                    <div class="leftTime" v-if="task.leftTime">
+                      <image src="@/static/icons/leftTime.png"></image>
+                      <span
+                        :class="['time', { undoTask: task.leftTime < 0 }]"
+                        >{{ moment(task.deadline).from(moment(), false) }}</span
+                      >
+                    </div>
                   </div>
                 </div>
               </uni-swipe-action-item>
@@ -183,11 +186,14 @@
                       },
                     ]"
                   >
-                    {{ task.title }}
-                  </div>
-                  <div class="leftTime" v-if="task.leftTime">
-                    <image src="@/static/icons/leftTime.png"></image>
-                    <span :class="['time',{undoTask:task.leftTime<0}]">{{ Math.floor(task.leftTime / 24 )}}</span>
+                    <div>{{ task.title }}</div>
+                    <div class="leftTime" v-if="task.leftTime">
+                      <image src="@/static/icons/leftTime.png"></image>
+                      <span
+                        :class="['time', { undoTask: task.leftTime < 0 }]"
+                        >{{ moment(task.deadline).from(moment(), false) }}</span
+                      >
+                    </div>
                   </div>
                 </div>
               </uni-swipe-action-item>
@@ -252,16 +258,19 @@ export default Vue.extend({
         {
           text: "删除",
           style: {
+            marinTop: "10rpx",
             backgroundColor: "#007aff",
           },
         },
         {
           text: "详情",
           style: {
+            marinTop: "10rpx",
             backgroundColor: "#dd524d",
           },
         },
       ],
+      moment: moment,
     };
   },
   computed: {
@@ -275,6 +284,7 @@ export default Vue.extend({
     updateListVue,
   },
   onLoad() {
+    moment.locale("zh-cn");
     uni.getStorage({
       key: "token",
       success: (res) => {
@@ -605,40 +615,37 @@ page {
   }
 
   .list {
-    // width: 300rpx;
     padding: 15rpx;
     background-color: white;
     border-radius: 15rpx;
     margin-top: 20rpx;
     min-height: 70rpx;
-
-    .task-wrapper {
-      margin-top: 20rpx;
-      margin-right: 20rpx;
-    }
-
     .task {
       padding: 10rpx;
       background-color: rgba(245, 245, 245, 0.549);
       border-radius: 10rpx;
       display: flex;
       align-items: center;
-      .leftTime {
-        display: flex;
-        align-items: center;
-        flex: 1;
-        image {
-          width: 35rpx;
-          height: 35rpx;
-          margin-right: 10rpx;
-        }
-        font-size: 15rpx;
-      }
+      margin-top: 20rpx;
       .title {
         font-size: 25rpx;
         margin-right: 15rpx;
-        flex: 2;
+        flex: 1;
         color: $uni-text-color-grey;
+        flex-shrink: 0;
+        .leftTime {
+          display: flex;
+          align-items: center;
+          // flex: 1;
+          image {
+            width: 20rpx;
+            height: 20rpx;
+            margin-right: 10rpx;
+          }
+          .time {
+            font-size: 20rpx;
+          }
+        }
       }
       .checkedTask {
         text-decoration: line-through;
@@ -723,6 +730,7 @@ page {
 }
 
 ::v-deep .button-group--right {
-  margin-left: 20rpx;
+  margin: 20rpx 0 0 20rpx;
+  padding-left: 20rpx;
 }
 </style>

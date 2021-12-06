@@ -2,7 +2,6 @@
   <div>
     <view
       class="toolbar"
-      @touchend.stop="format"
       :style="'bottom: ' + (isIOS ? keyboardHeight : 0) + 'px'"
     >
       <i class="iconfont icon-charutupian" @touchend.stop="insertImage"></i>
@@ -150,7 +149,7 @@
         data-value="20px"
         @touchend="format('marginBottom', '20px')"
       ></i>
-      <i class="iconfont icon-clearedformat" @tap="removeFormat"></i>
+      <i class="iconfont icon-clearedformat" @touchend="removeFormat"></i>
       <i
         :class="'iconfont icon-font ' + (formats.fontFamily ? 'ql-active' : '')"
         data-name="fontFamily"
@@ -166,15 +165,15 @@
         data-value="24px"
         @touchend="format('fontSize', '24px')"
       ></i>
-      <i
+<!--      <i
         :class="
           'iconfont icon-text_color ' +
           (formats.color === fontColor ? 'ql-active' : '')
         "
         data-name="color"
         :data-value="fontColor"
-        @tap="open"
-      ></i>
+        @touchend="open"
+      ></i> -->
       <i
         :class="
           'iconfont icon-fontbgcolor ' +
@@ -185,9 +184,9 @@
         @touchend="format('backgroundColor', '#00ff00')"
       ></i>
       <!-- 引用黄河浪的color取色器 -->
-      <i class="iconfont icon-date" @tap="insertDate"></i>
-      <i class="iconfont icon-undo" @tap="undo"></i>
-      <i class="iconfont icon-redo" @tap="redo"></i>
+      <i class="iconfont icon-date" @touchend="insertDate"></i>
+      <i class="iconfont icon-undo" @touchend="undo"></i>
+      <i class="iconfont icon-redo" @touchend="redo"></i>
       <i
         :class="
           'iconfont icon-zitixiahuaxian ' +
@@ -232,8 +231,8 @@
         data-value="+1"
         @touchend="format('indent', '+1')"
       ></i>
-      <i class="iconfont icon-fengexian" @tap="insertDivider"></i>
-      <i class="iconfont icon-preview" @tap="store" id="2"></i>
+      <i class="iconfont icon-fengexian" @touchend="insertDivider"></i>
+      <i class="iconfont icon-preview" @touchend="store" id="2"></i>
       <i
         :class="
           'iconfont icon-zitixiabiao ' +
@@ -253,7 +252,7 @@
         @touchend="format('script', 'super')"
       ></i>
       <!-- <i class="iconfont icon-quanping"></i> -->
-      <i class="iconfont icon-shanchu" @tap="clear"></i>
+      <i class="iconfont icon-shanchu" @touchend="clear"></i>
       <i
         :class="
           'iconfont icon-direction-rtl ' +
@@ -263,7 +262,7 @@
         data-value="rtl"
         @touchend="format('direction', 'rtl')"
       ></i>
-      <i class="iconfont icon-baocun" @tap="store" id="1"></i>
+      <i class="iconfont icon-baocun" @touchend="store" id="1"></i>
     </view>
 
     <view class="container">
@@ -296,7 +295,7 @@ export default Vue.extend({
       },
       isEdit: false,
       fontColor: "#000",
-      formats: {},
+      formats: {} as any,
       readOnly: false,
       placeholder: "开始输入...",
       editorHeight: 300,
@@ -355,7 +354,7 @@ export default Vue.extend({
       this.editorCtx.blur();
     },
 
-    format(name: string, value: string) {
+    format(name: string, value: any=null) {
       // this.hideKey();
 
       if (!name) return; 

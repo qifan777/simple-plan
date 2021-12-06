@@ -45,6 +45,21 @@ export default Vue.extend({
   },
   methods: {
     chooseFile() {
+      // #ifdef MP-WEIXIN
+      wx.chooseMessageFile({
+        count: 10,
+        success: (result) => {
+          let tempFiles = result.tempFiles;
+          tempFiles.forEach((file) => {
+            this.files.push({
+              name: file.name,
+              path: file.path,
+              status: "ready",
+            });
+          });
+        },
+      });
+      // #endif
       //#ifdef H5
       uni.chooseFile({
         success: (result) => {
