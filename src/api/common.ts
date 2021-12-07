@@ -6,6 +6,7 @@ export const uploadFile = (filePath: any) => {
       header: {
         jctoken: uni.getStorageSync('token')
       },
+      name:'name',
       filePath: filePath, 
       success: res => {
         console.log(res);

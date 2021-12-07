@@ -19,14 +19,21 @@
         </template>
       </userRow>
     </view>
-    <view class="user-row">
+    <!-- <view class="user-row">
       <userRow>
         <template v-slot:left> 手机号 </template>
         <template v-slot:right>
-          {{ tempInfo.phoneNumber }}
+          <button
+            class="getPhone"
+            plain
+            open-type="getPhoneNumber"
+            @getphonenumber="getPhone"
+          >
+            {{ tempInfo.phoneNumber ? tempInfo.phoneNumber : "点击获取" }}
+          </button>
         </template>
       </userRow>
-    </view>
+    </view> -->
     <view @click="openPopup('popup2')" class="user-row">
       <userRow>
         <template v-slot:left> 昵称 </template>
@@ -83,7 +90,9 @@
         </view>
       </uni-popup-dialog>
     </uni-popup>
+    <!-- #ifdef H5 || APP-PLUS  -->
     <button plain="true" class="logout" @click="logout">退出登录</button>
+    <!-- #endif -->
   </view>
 </template>
 
@@ -92,8 +101,9 @@ import userRow from "../../components/user/edit-row.vue";
 import { mapState } from "vuex";
 import { User } from "@/typings";
 import Vue from "vue";
-import { updateUser } from "@/api/user";
+import { getUserInfo, updateUser } from "@/api/user";
 import { uploadFile } from "@/api/common";
+import { getWechatPhone } from "@/api/wechat";
 export default Vue.extend({
   //知识点组件,slot
   components: {
@@ -110,11 +120,49 @@ export default Vue.extend({
     };
   },
   methods: {
+    initUserInfo() {
+      uni.getUserProfile({
+        desc: "用户完善资料",
+        success: (res) => {
+          const uf = res.userInfo as any;
+          console.log(res.userInfo);
+
+          let genderMap = { 0: "男", 1: "女", 2: "保密" };
+          this.tempInfo.gender = genderMap[uf.gender];
+          this.tempInfo.nickName = uf.nickName;
+          this.tempInfo.avatar = uf.avatarUrl;
+          this.saveChange();
+        },
+      });
+    },
+    getPhone(info: any) {
+      let wxAuth = {
+        encryptedData: info.detail.encryptedData,
+        iv: info.detail.iv,
+      };
+      getWechatPhone(wxAuth).then((res) => {
+        this.tempInfo.phoneNumber = res.data.phoneNumber;
+        this.saveChange();
+      });
+    },
     onLoad() {
       //之所以要延迟是因为,onLoad开始执行的时候,userInfo还没加载进来。
       setTimeout(() => {
         //深拷贝一份tempInfo
         this.tempInfo = JSON.parse(JSON.stringify(this.userInfo)) as User;
+        // #ifdef H5 || APP-PLUS
+        if (!this.tempInfo.avatar) {
+          uni.showModal({
+            title: "完善信息",
+            content: "是否同意获取您微信头像和昵称？",
+            success: (res) => {
+              if (res.confirm) {
+                this.initUserInfo();
+              }
+            },
+          });
+        }
+        // #endif
       }, 400);
     },
     logout() {
@@ -286,17 +334,20 @@ export default Vue.extend({
   height: 100upx;
   border-radius: 20upx;
 }
-.logout{
-    width: 300rpx;
-    height: 80rpx;
-    line-height: 80rpx;
-    border-radius: 40rpx;
-    margin-top: 50rpx;
-    margin-bottom: 30rpx;
-    border: 0;
-    color: black;
-    box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
-	    background: linear-gradient(to right, #fafafa 0%, #cccccc 100%);
-
+.logout {
+  width: 300rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 40rpx;
+  margin-top: 50rpx;
+  margin-bottom: 30rpx;
+  border: 0;
+  color: black;
+  box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
+  background: linear-gradient(to right, #fafafa 0%, #cccccc 100%);
+}
+.getPhone {
+  border: 0 !important;
+  padding: 0;
 }
 </style>

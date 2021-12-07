@@ -27,7 +27,7 @@ export default Vue.extend({
           rules: [{ required: true, errorMessage: "请填写列表名" }],
         },
       },
-      list: {} as List,
+      list: {title:''} as List,
     };
   },
   methods: {

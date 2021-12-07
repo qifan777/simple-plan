@@ -102,7 +102,7 @@ export default Vue.extend({
     },
     async upload() {
       let unUploadFiles = this.files.filter(
-        (value) => !value.path.startsWith("http")
+        (value) => !value.path.startsWith("https")
       );
 
       for (let index = 0; index < unUploadFiles.length; index++) {
@@ -117,7 +117,7 @@ export default Vue.extend({
       this.files.splice(index, 1);
     },
     getUploadFiles() {
-      return this.files.filter((value) => value.path.startsWith("http"));
+      return this.files.filter((value) => value.path.startsWith("https"));
     },
     setFiles(filesArr: myFile[]) {
       this.files = filesArr;

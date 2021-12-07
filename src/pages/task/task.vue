@@ -42,7 +42,7 @@
       </uni-forms-item>
       <uni-forms-item name="description" label="描述" class="form-item">
         <div class="row">
-          <myeditor ref="myEditor"></myeditor>
+          <myeditor id="myEditor" ref="myEditor"></myeditor>
         </div>
       </uni-forms-item>
 
@@ -158,11 +158,20 @@ export default Vue.extend({
       });
     },
   },
-  mounted() {
-    this.myEditor = this.$refs.myEditor as any;
-    setTimeout(() => {
-      this.myEditor.setContent(this.task.description);
-    }, 1000);
+  onReady() {
+    uni
+      .createSelectorQuery()
+      .in(this.$refs.myEditor)
+      .select("#editor")
+      .context((res) => {
+        let ctx = res.context as UniApp.EditorContext;
+        ctx.setContents({ html: this.task.description });
+      })
+      .exec();
+    // setTimeout(() => {
+    //   this.myEditor = this.$refs.myEditor as any;
+    //   this.myEditor.setContent(this.task.description);
+    // }, 1000);
   },
   onLoad(options: any) {
     showTask({ id: options.id }).then((res) => {

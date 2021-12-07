@@ -143,7 +143,7 @@
       <i
         :class="
           'iconfont icon-723bianjiqi_duanhouju ' +
-          (formats.marginBottom  ? 'ql-active' : '')
+          (formats.marginBottom ? 'ql-active' : '')
         "
         data-name="marginBottom"
         data-value="20px"
@@ -165,7 +165,7 @@
         data-value="24px"
         @touchend="format('fontSize', '24px')"
       ></i>
-<!--      <i
+      <!--      <i
         :class="
           'iconfont icon-text_color ' +
           (formats.color === fontColor ? 'ql-active' : '')
@@ -305,7 +305,7 @@ export default Vue.extend({
     };
   },
   methods: {
-    setContent(html: string) {        
+    setContent(html: string) {
       this.editorCtx.setContents({ html: html });
     },
     cancel() {
@@ -336,6 +336,7 @@ export default Vue.extend({
     onEditorReady() {
       uni
         .createSelectorQuery()
+        .in(this)
         .select("#editor")
         .context((res) => {
           this.editorCtx = res.context;
@@ -354,10 +355,10 @@ export default Vue.extend({
       this.editorCtx.blur();
     },
 
-    format(name: string, value: any=null) {
+    format(name: string, value: any = null) {
       // this.hideKey();
 
-      if (!name) return; 
+      if (!name) return;
       this.editorCtx.format(name, value);
     },
 

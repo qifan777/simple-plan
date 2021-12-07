@@ -69,7 +69,7 @@ export default Vue.extend({
     return {
       listId: -1,
       date: "选择截至日期",
-      task: {} as Task,
+      task: {title:''} as Task,
       steps: [] as Step[],
       rules: {
         title: {
@@ -91,6 +91,8 @@ export default Vue.extend({
       let form = this.$refs.form as any;
       //获取上传表单对象
       let up = this.$refs.uploader as any;
+      console.log(this.task);
+      
       let res = (await form.validate()) as any[];
       //获取富文本编辑器对象
       let myEditor = this.$refs.myEditor as any;
