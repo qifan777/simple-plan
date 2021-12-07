@@ -1,5 +1,5 @@
-// const baseUrl =process.env.VUE_APP_BASE_URL
-const baseUrl = "http://localhost/plan";
+const baseUrl =process.env.VUE_APP_BASE_URL
+// const baseUrl = "http://localhost/plan";
 console.log(baseUrl);
 import store from "@/store";
 import { wechatLogin } from "@/api/auth";

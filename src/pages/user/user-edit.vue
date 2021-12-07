@@ -150,7 +150,7 @@ export default Vue.extend({
       setTimeout(() => {
         //深拷贝一份tempInfo
         this.tempInfo = JSON.parse(JSON.stringify(this.userInfo)) as User;
-        // #ifdef H5 || APP-PLUS
+        // #ifdef MP-WEIXIN
         if (!this.tempInfo.avatar) {
           uni.showModal({
             title: "完善信息",

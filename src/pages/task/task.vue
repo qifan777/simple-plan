@@ -13,7 +13,7 @@
         <div class="row">
           <div class="step-wrapper">
             <div class="step" v-for="(step, index) in steps" :key="index">
-              <checkbox-group @change="step.checked = !step.checked">
+              <checkbox-group @change="stepCheck(step)">
                 <checkbox
                   value="0"
                   :checked="step.checked"
@@ -96,6 +96,9 @@ export default Vue.extend({
     };
   },
   methods: {
+    stepCheck(step: any) {
+      step.checked = !step.checked;
+    },
     remindTimeChange(value: string) {
       if (value.length < 12) {
         uni.showToast({ title: "请选择详细时间", icon: "none" });
