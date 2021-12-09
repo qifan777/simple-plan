@@ -29,7 +29,7 @@
         mode="widthFix"
         src="@/static/icons/upload.png"
       ></image>
-      <button class="btn" @click="upload">开始上传</button>
+      <button class="btn" @click="upload">上传</button>
     </div>
   </div>
 </template>
@@ -45,10 +45,14 @@ export default Vue.extend({
   },
   methods: {
     chooseFile() {
+      console.log("选择文件");
+
       // #ifdef MP-WEIXIN
       wx.chooseMessageFile({
         count: 10,
         success: (result) => {
+          console.log(result);
+
           let tempFiles = result.tempFiles;
           tempFiles.forEach((file) => {
             this.files.push({
@@ -177,7 +181,11 @@ export default Vue.extend({
       color: blue;
       font-size: 20rpx;
       text-decoration: underline;
-      word-wrap: break-all;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-all;
+      display: block;
       width: 250rpx;
     }
 
@@ -200,10 +208,14 @@ export default Vue.extend({
   .btn {
     margin: 0;
     margin-top: 10rpx;
-    width: 160rpx;
+    width: 100rpx;
     height: 40rpx;
+    padding: 0;
+    border: 0;
     font-size: 20rpx;
     line-height: 40rpx;
+    color: white;
+    background-color: #07c160;
   }
 }
 

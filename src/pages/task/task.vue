@@ -60,16 +60,28 @@
         <div class="row">
           <uni-datetime-picker
             :border="false"
-            type="datetime"
+            type="date"
             v-model="task.deadline"
           />
         </div>
       </uni-forms-item>
+      <!-- #ifdef MP-WEIXIN -->
+      <uni-forms-item label="提醒日期" name="remindTime">
+        <div class="row">
+          <uni-datetime-picker
+            :border="false"
+            type="datetime"
+            v-model="task.remindTime"
+            @change="remindTimeChange"
+          />
+        </div>
+      </uni-forms-item>
+      <!-- #endif -->
       <uni-forms-item label="附件" class="form-item">
         <uploader ref="uploader"></uploader>
       </uni-forms-item>
     </uni-forms>
-    <button plain="true" class="submit" @click="submit">更新</button>
+    <button plain="true" class="submit" @click="subScribe">更新</button>
   </view>
 </template>
 <script lang="ts">
@@ -83,8 +95,7 @@ export default Vue.extend({
   components: { uploader, myeditor },
   data() {
     return {
-      date: "选择截至日期",
-      time: "设置提醒时间",
+      originRemindTime: "",
       task: {} as Task,
       steps: [] as Step[],
       rules: {
@@ -99,12 +110,32 @@ export default Vue.extend({
     stepCheck(step: any) {
       step.checked = !step.checked;
     },
+    subScribe() {
+      // 如果提醒时间发生改变则需要重新订阅提醒
+      if (this.originRemindTime != this.task.remindTime) {
+        uni.requestSubscribeMessage({
+          tmplIds: ["qTYSkdd92d38CqXXt54yr3kz4wb0rZRuHXkEho73ato"],
+          success: (res) => {
+            if (
+              res["qTYSkdd92d38CqXXt54yr3kz4wb0rZRuHXkEho73ato"] == "accept"
+            ) {
+              this.task.isSubscribe = true;
+            }
+            this.submit();
+          },
+          fail: (err) => {
+            this.submit();
+          },
+        });
+      } else {
+        this.submit();
+      }
+    },
     remindTimeChange(value: string) {
       if (value.length < 12) {
-        uni.showToast({ title: "请选择详细时间", icon: "none" });
+        uni.showToast({ title: "请选择详细时间", icon: "error" });
         return;
       }
-      this.task.remindTime = value;
     },
     async submit() {
       //获取表单对象
@@ -122,15 +153,23 @@ export default Vue.extend({
       if (uploadFiles.length != up.files.length) {
         uni.showToast({
           title: "有未上传文件",
-          icon: "none",
+          icon: "error",
         });
+        return;
+      }
+      if (this.task.deadline && this.task.deadline?.toString().length < 12) {
+        this.task.deadline = this.task.deadline + "00:00:00";
+      }
+      if (
+        this.task.remindTime &&
+        this.task.remindTime?.toString().length < 12
+      ) {
+        uni.showToast({ title: "提醒日期不正确", icon: "error" });
         return;
       }
       this.task.appendix = JSON.stringify(uploadFiles);
       this.task.steps = this.steps.filter((x) => x.content);
-      if (this.task.deadline && this.task.deadline?.toString().length < 12) {
-        this.task.deadline = this.task.deadline + "00:00:00";
-      }
+
       updateTask(this.task).then((res) => {
         if (res.data == true) {
           uni.showToast({ title: "修改成功" });
@@ -171,16 +210,15 @@ export default Vue.extend({
         ctx.setContents({ html: this.task.description });
       })
       .exec();
-    // setTimeout(() => {
-    //   this.myEditor = this.$refs.myEditor as any;
-    //   this.myEditor.setContent(this.task.description);
-    // }, 1000);
   },
   onLoad(options: any) {
     showTask({ id: options.id }).then((res) => {
       let up = this.$refs.uploader as any;
       let data = res.data as Task & { steps: Step[] };
       this.steps = data.steps || [];
+      if (data.remindTime) {
+        this.originRemindTime = data.remindTime as string;
+      }
       if (data.appendix) {
         up.setFiles(JSON.parse(data.appendix) as myFile[]);
       }
@@ -200,6 +238,7 @@ page {
   padding: 20rpx;
   background-color: white;
   overflow: hidden;
+
   .row {
     overflow: hidden;
     height: 100%;
@@ -258,11 +297,11 @@ page {
     border: 0;
     color: white;
     box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
-    background: linear-gradient(to right, #f0ad4e 0%, #fddcad 100%);
+    background-color: rgb(0, 170, 255);
   }
 }
 ::v-deep .uni-forms-item__inner {
-  padding: 10rpx;
   border-bottom: 1rpx solid rgba(143, 142, 142, 0.089);
+  padding: 10rpx 0 !important;
 }
 </style>

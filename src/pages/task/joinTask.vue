@@ -80,7 +80,7 @@ export default Vue.extend({
     border: 0;
     color: white;
     box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
-    background: linear-gradient(to right, #f0ad4e 0%, #fddcad 100%);
+    background-color: rgb(0, 170, 255);
   }
 }
 </style>

@@ -29,16 +29,16 @@ export default Vue.extend({
       },
     };
   },
-  props:{
-      list:{
-          default:{} as List
-      }
+  props: {
+    list: {
+      default: {} as List,
+    },
   },
   methods: {
     async submit() {
       let form = this.$refs.form as any;
       let res = (await form.validate()) as any[];
-      delete this.list.tasks
+      delete this.list.tasks;
       updateList(this.list).then((res) => {
         if (res.data == true) {
           uni.showToast({ title: "修改成功" });
@@ -86,7 +86,7 @@ export default Vue.extend({
     border: 0;
     color: white;
     box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
-    background: linear-gradient(to right, #f0ad4e 0%, #fddcad 100%);
+    background-color: rgb(0, 170, 255);
   }
 }
 </style>

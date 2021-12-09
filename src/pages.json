@@ -34,6 +34,13 @@
       }
     },
     {
+      "path":"pages/feedback/feedback",
+      "style": {
+        "navigationBarTitleText": "反馈",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path": "pages/register/register",
       "style": {
         "navigationStyle": "custom"

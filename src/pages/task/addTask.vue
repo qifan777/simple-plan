@@ -41,16 +41,28 @@
         <div class="row">
           <uni-datetime-picker
             :border="false"
-            type="datetime"
+            type="date"
             v-model="task.deadline"
           />
         </div>
       </uni-forms-item>
+      <!-- #ifdef MP-WEIXIN -->
+      <uni-forms-item label="提醒日期" name="remindTime">
+        <div class="row">
+          <uni-datetime-picker
+            :border="false"
+            type="datetime"
+            v-model="task.remindTime"
+            @change="remindTimeChange"
+          />
+        </div>
+      </uni-forms-item>
+      <!-- #endif -->
       <uni-forms-item label="附件">
         <uploader ref="uploader"></uploader>
       </uni-forms-item>
     </uni-forms>
-    <button plain="true" class="submit" @click="submit">提交</button>
+    <button plain="true" class="submit" @click="subScribe">提交</button>
   </view>
 </template>
 <script lang="ts">
@@ -69,7 +81,7 @@ export default Vue.extend({
     return {
       listId: -1,
       date: "选择截至日期",
-      task: {title:''} as Task,
+      task: { title: "" } as Task,
       steps: [] as Step[],
       rules: {
         title: {
@@ -79,12 +91,31 @@ export default Vue.extend({
     };
   },
   methods: {
+    subScribe() {
+      if (this.task.remindTime) {
+        uni.requestSubscribeMessage({
+          tmplIds: ["qTYSkdd92d38CqXXt54yr3kz4wb0rZRuHXkEho73ato"],
+          success: (res) => {
+            if (
+              res["qTYSkdd92d38CqXXt54yr3kz4wb0rZRuHXkEho73ato"] == "accept"
+            ) {
+              this.task.isSubscribe = true;
+              this.submit();
+            }
+          },
+          fail: (err) => {
+            this.submit();
+          },
+        });
+      } else {
+        this.submit();
+      }
+    },
     remindTimeChange(value: string) {
       if (value.length < 12) {
-        uni.showToast({ title: "请选择详细时间", icon: "none" });
+        uni.showToast({ title: "请选择详细时间", icon: "error" });
         return;
       }
-      this.task.remindTime = value;
     },
     async submit() {
       //获取表单对象
@@ -92,7 +123,7 @@ export default Vue.extend({
       //获取上传表单对象
       let up = this.$refs.uploader as any;
       console.log(this.task);
-      
+
       let res = (await form.validate()) as any[];
       //获取富文本编辑器对象
       let myEditor = this.$refs.myEditor as any;
@@ -108,12 +139,19 @@ export default Vue.extend({
         });
         return;
       }
-      this.task.appendix = JSON.stringify(uploadFiles);
-      this.task.listId = this.listId;
-      this.task.steps = this.steps.filter((x) => x.content);
       if (this.task.deadline && this.task.deadline?.toString().length < 12) {
         this.task.deadline = this.task.deadline + "00:00:00";
       }
+      if (
+        this.task.remindTime &&
+        this.task.remindTime?.toString().length < 12
+      ) {
+        uni.showToast({ title: "提醒日期不正确", icon: "error" });
+        return;
+      }
+      this.task.appendix = JSON.stringify(uploadFiles);
+      this.task.listId = this.listId;
+      this.task.steps = this.steps.filter((x) => x.content);
       createTask(this.task).then((res) => {
         if (res.data == true) {
           uni.showToast({ title: "添加成功" });
@@ -194,12 +232,12 @@ page {
     border: 0;
     color: white;
     box-shadow: 10rpx 10rpx 15rpx rgb(245, 245, 245);
-    background: linear-gradient(to right, #f0ad4e 0%, #fddcad 100%);
+    background-color: rgb(0, 170, 255);
   }
 }
 
 ::v-deep .uni-forms-item__inner {
-  padding: 10rpx;
   border-bottom: 1rpx solid rgba(143, 142, 142, 0.089);
+  padding: 10rpx 0 !important;
 }
 </style>

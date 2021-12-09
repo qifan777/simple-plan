@@ -50,6 +50,12 @@
         </template>
       </userRow>
     </view>
+    <view @click="switchPage('/pages/feedback/feedback')" class="user-row">
+      <userRow>
+        <template v-slot:left> 反馈 </template>
+        <template v-slot:right> 点击反馈 </template>
+      </userRow>
+    </view>
     <uni-popup ref="popup1" type="dialog">
       <uni-popup-dialog
         title="性别选择"
@@ -120,6 +126,9 @@ export default Vue.extend({
     };
   },
   methods: {
+    switchPage(value: string) {
+      uni.navigateTo({ url: value });
+    },
     initUserInfo() {
       uni.getUserProfile({
         desc: "用户完善资料",

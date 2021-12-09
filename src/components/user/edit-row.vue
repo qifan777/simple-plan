@@ -4,12 +4,12 @@
       <slot name="left">昵称</slot>
     </view>
     <view class="right">
-      <slot name="right">初七</slot>
+      <slot name="right">起凡</slot>
       <uni-icons
         class="arrow-right"
         type="arrowright"
         color="#d1d1d1"
-        size="28"
+        size="20"
       ></uni-icons>
     </view>
   </view>
@@ -30,11 +30,14 @@ export default Vue.extend({
   justify-content: space-between;
   align-items: center;
   padding: 20rpx;
-  border-bottom: 2rpx solid #d6d6d6;
-  color: #333;
+  border-bottom: 1px solid rgba($color: #000000, $alpha: 0.1);
   font-size: 35rpx;
   background-color: white;
+  .left{
+    color: rgba($color: #000000, $alpha: 0.3);
+  }
   .right {
+    color: black;
     display: flex;
     align-items: center;
     .arrow-right {

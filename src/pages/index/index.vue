@@ -331,13 +331,13 @@ export default Vue.extend({
           continue;
         }
         for (const task of list.tasks) {
+          if (task.checked) {
+            this.$set(task, "leftTime", 0);
+            continue;
+          }
           if (task.deadline) {
             let toNow = moment(task.deadline).diff(moment(), "hours");
-            if (task.checked) {
-              this.$set(task, "leftTime", 0);
-            } else {
-              this.$set(task, "leftTime", toNow);
-            }
+            this.$set(task, "leftTime", toNow);
           }
         }
       }
@@ -417,6 +417,9 @@ export default Vue.extend({
     if (!this.finish) {
       this.getList();
     }
+  },
+  onShareAppMessage() {
+    return {};
   },
 });
 </script>
@@ -683,13 +686,13 @@ page {
   text-align: center;
   font-size: 90rpx;
   color: white;
-  border: rgb(255, 167, 3) 1px solid;
-  box-shadow: 10rpx 10rpx 15rpx rgba(245, 222, 179, 0.725);
+  border: rgb(0, 170, 255) 1px solid;
+  box-shadow: 10rpx 10rpx 15rpx rgba(0, 170, 255,0.1);
   transition: transform 0.3s ease-in;
 }
 
 .plus {
-  @include base(wheat);
+  @include base(rgba(0, 170, 255,0.7));
 
   &.active {
     z-index: 1;
