@@ -1,6 +1,6 @@
 # 简计划
 本项目是基于uni-app(vue2语法) 以及typescript。实现了如下功能
-
+![](https://photo-invite.oss-cn-qingdao.aliyuncs.com/simple-plan/code.jpg)
 - 创建任务清单(包含许多任务)
 - 创建任务(添加附件，截至时间，划分子任务，分配任务给其他人)
 - 富文本编辑
