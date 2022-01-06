@@ -421,6 +421,9 @@ export default Vue.extend({
   onShareAppMessage() {
     return {};
   },
+  onShareTimeline() {
+    return {};
+  },
 });
 </script>
 
@@ -687,12 +690,12 @@ page {
   font-size: 90rpx;
   color: white;
   border: rgb(0, 170, 255) 1px solid;
-  box-shadow: 10rpx 10rpx 15rpx rgba(0, 170, 255,0.1);
+  box-shadow: 10rpx 10rpx 15rpx rgba(0, 170, 255, 0.1);
   transition: transform 0.3s ease-in;
 }
 
 .plus {
-  @include base(rgba(0, 170, 255,0.7));
+  @include base(rgba(0, 170, 255, 0.7));
 
   &.active {
     z-index: 1;

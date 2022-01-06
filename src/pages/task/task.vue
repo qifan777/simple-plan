@@ -42,7 +42,11 @@
       </uni-forms-item>
       <uni-forms-item name="description" label="描述" class="form-item">
         <div class="row">
-          <myeditor id="myEditor" ref="myEditor"></myeditor>
+          <myeditor
+            @ready="editorReady"
+            id="myEditor"
+            ref="myEditor"
+          ></myeditor>
         </div>
       </uni-forms-item>
 
@@ -202,6 +206,12 @@ export default Vue.extend({
         });
       });
     },
+    editorReady() {
+      let editor = this.$refs.myEditor as any;
+      setTimeout(() => {
+        editor.setContent(this.task.description);
+      }, 1000);
+    },
   },
   onShareAppMessage() {
     let title = this.task.title as string;
@@ -209,18 +219,16 @@ export default Vue.extend({
     return {
       title: title,
       path: "/pages/task/visitorTask?id=" + taskId,
+      query: "id=" + taskId,
     };
   },
-  onReady() {
-    uni
-      .createSelectorQuery()
-      .in(this.$refs.myEditor)
-      .select("#editor")
-      .context((res) => {
-        let ctx = res.context as UniApp.EditorContext;
-        ctx.setContents({ html: this.task.description });
-      })
-      .exec();
+  onShareTimeline() {
+    let title = this.task.title as string;
+    let taskId = this.task.taskId as number;
+    return {
+      title: title,
+      path: "/pages/task/visitorTask?id=" + taskId,
+    };
   },
   onLoad(options: any) {
     showTask({ id: options.id }).then((res) => {

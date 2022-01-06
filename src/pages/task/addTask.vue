@@ -34,7 +34,7 @@
       </uni-forms-item>
       <uni-forms-item name="description" label="描述">
         <div class="row">
-          <myeditor ref="myEditor"></myeditor>
+          <myeditor id="myEditor" ref="myEditor"></myeditor>
         </div>
       </uni-forms-item>
       <uni-forms-item label="截至日期" name="deadline">

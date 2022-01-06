@@ -339,6 +339,7 @@ export default Vue.extend({
         .in(this)
         .select("#editor")
         .context((res) => {
+          this.$emit("ready");
           this.editorCtx = res.context;
         })
         .exec();
