@@ -24,12 +24,13 @@
         ></image>
       </div>
       <image
+       v-if="!disable"
         @click="chooseFile"
         class="choose"
         mode="widthFix"
         src="@/static/icons/upload.png"
       ></image>
-      <button class="btn" @click="upload">上传</button>
+      <button class="btn" v-if="!disable" @click="upload">上传</button>
     </div>
   </div>
 </template>
@@ -42,6 +43,12 @@ export default Vue.extend({
     return {
       files: [] as myFile[],
     };
+  },
+  props:{
+    disable:{
+      type:Boolean,
+      default:false
+    }
   },
   methods: {
     chooseFile() {

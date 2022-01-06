@@ -57,6 +57,12 @@
       "style": {
         "navigationBarTitleText": ""
       }
+    },
+    {
+      "path":"pages/task/visitorTask",
+      "style":{
+        "navigationBarTitleText":""
+      }
     }
   ],
   "globalStyle": {

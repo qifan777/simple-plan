@@ -140,7 +140,7 @@ export default Vue.extend({
         return;
       }
       if (this.task.deadline && this.task.deadline?.toString().length < 12) {
-        this.task.deadline = this.task.deadline + "00:00:00";
+        this.task.deadline = this.task.deadline.toString().trim() + " 00:00:00";
       }
       if (
         this.task.remindTime &&
